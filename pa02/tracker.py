@@ -43,8 +43,8 @@ def proceed(choice):
         cat = {'name':name, 'desc':desc}
         category.update(rowid,cat)
     elif choice == '4':
-        trans = transactions.select_all()
-        transaction_print(trans)
+        item = transactions.select_all()
+        transaction_print(item)
     elif choice == '5':
         number_of_items = input("Transaction item number: ")
         amount = input("Transaction amount: ")
@@ -53,7 +53,7 @@ def proceed(choice):
         month = input("Transaction month: ")
         year = input("Transaction year: ")
         date = input("What date was this transaction made(mm/dd/yyyy): ")
-        trans = {
+        item = {
             'number_of_items':number_of_items,
             'amount':amount,
             'category':category_transaction,
@@ -61,7 +61,7 @@ def proceed(choice):
             'month':month,
             'year':year,
             'desc':desc}
-        transactions.add(trans)
+        transactions.add(item)
     elif choice == '6':
         row_id = int(input("Provide ID of transaction to be deleted: "))
         print("Deleting Element with ID: "+ str(row_id))
@@ -96,12 +96,7 @@ def transaction_print(items):
     if len(items)==0:
         print('Nothing here')
         return
-
-    print('\n')
-
-    print("%-10s %-10s %-10s %-10s %-10s %-30s"%(
-        'row_id','item number','amount','category','date','description'))
-
+    print('row_id     item number amount     category   date       description')
     for item in items:
         values = tuple(item.values())
         print("%-10s %-10s %-10d %-10s %-10s %-30s"%
@@ -117,7 +112,7 @@ def categories_print(categories):
     '''
     print categories
     '''
-    print("%-3s %-10s %-30s"%("id","name","description"))
+    print("id  name       description    ")
 
     for category_item in categories:
         category_print(category_item)
