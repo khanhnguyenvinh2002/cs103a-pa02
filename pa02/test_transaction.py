@@ -8,9 +8,9 @@ def dbfile(tmpdir):
     return tmpdir.join('test_tracker.db')
 
 @pytest.fixture
-def empty_db(db_file):
+def empty_db(dbfile):
     ''' create an empty db '''
-    db_transaction = Transaction(db_file)
+    db_transaction = Transaction(dbfile)
     yield db_transaction
 
 @pytest.fixture
@@ -75,14 +75,12 @@ def test_to_cat_dict():
     ''' teting the to_cat_dict function '''
     my_test = to_cat_dict(
         (1, 2, 3, 'testing delete','4/1/2022'
-        ,'12','12','testing delete')
+        ,'testing delete')
     )
     assert my_test['number_of_items']==2
     assert my_test['amount']==3
     assert my_test['category']=='testing delete'
     assert my_test['date']=='4/1/2022'
-    assert my_test['year']=='12'
-    assert my_test['month']=='12'
     assert my_test['desc']=='testing delete'
     assert len(my_test.keys())==6
 
