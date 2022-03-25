@@ -1,4 +1,6 @@
 # cs103a-pa02
+
+we are having trouble using script with our computer and tiara so we didn't include that here
  
 ================================================= test session starts =================================================
 platform win32 -- Python 3.9.2, pytest-7.1.1, pluggy-1.0.0
