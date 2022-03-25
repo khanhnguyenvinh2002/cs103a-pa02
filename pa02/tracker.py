@@ -1,47 +1,16 @@
-#! /opt/miniconda3/bin/python3
 '''
-tracker is an app that maintains a list of personal
-financial transactions.
-
-It uses Object Relational Mappings (ORM)
-to abstract out the database operations from the
-UI/UX code.
-
-The ORM, Category, will map SQL rows with the schema
-  (rowid, category, description)
-to Python Dictionaries as follows:
-
-(5,'rent','monthly rent payments') <-->
-
-{rowid:5,
- category:'rent',
- description:'monthly rent payments'
- }
-
-Likewise, the ORM, Transaction will mirror the database with
-columns:
-amount, category, date (yyyymmdd), description
-
-In place of SQL queries, we will have method calls.
-
-This app will store the data in a SQLite database ~/tracker.db
-
-Note the actual implementation of the ORM is hidden and so it 
-could be replaced with PostgreSQL or Pandas or straight python lists
-
+tracker
 '''
-
-#from transactions import Transaction
 from category import Category
-import sys
+from transaction import Transaction
 
-#transactions = Transaction('tracker.db')
+transactions = Transaction('tracker.db')
 category = Category('tracker.db')
 
 
 # here is the menu for the tracker app
 
-menu = '''
+MENU = '''
 0. quit
 1. show categories
 2. add category
@@ -56,73 +25,101 @@ menu = '''
 11. print this menu
 '''
 
-
-
-
-def process_choice(choice):
-
-    if choice=='0':
-        return
-    elif choice=='1':
+def proceed(choice):
+    ''' proceed the program '''
+    if choice=='1':
         cats = category.select_all()
-        print_categories(cats)
+        categories_print(cats)
     elif choice=='2':
-        name = input("category name: ")
-        desc = input("category description: ")
+        name = input("Category name: ")
+        desc = input("Category description: ")
         cat = {'name':name, 'desc':desc}
         category.add(cat)
     elif choice=='3':
-        print("modifying category")
+        print("Updating category")
         rowid = int(input("rowid: "))
-        name = input("new category name: ")
-        desc = input("new category description: ")
+        name = input("Category name: ")
+        desc = input("Category description: ")
         cat = {'name':name, 'desc':desc}
         category.update(rowid,cat)
+    elif choice == '4':
+        trans = transactions.select_all()
+        transaction_print(trans)
+    elif choice == '5':
+        number_of_items = input("Transaction item number: ")
+        amount = input("Transaction amount: ")
+        category_transaction = input("Transaction category: ")
+        desc = input("Transaction description: ")
+        month = input("Transaction month: ")
+        year = input("Transaction year: ")
+        date = input("What date was this transaction made(mm/dd/yyyy): ")
+        trans = {
+            'number_of_items':number_of_items,
+            'amount':amount,
+            'category':category_transaction,
+            'date':date,
+            'month':month,
+            'year':year,
+            'desc':desc}
+        transactions.add(trans)
+    elif choice == '6':
+        row_id = int(input("Provide ID of transaction to be deleted: "))
+        print("Deleting Element with ID: "+ str(row_id))
+        transactions.delete(row_id)
+    elif choice == '7':
+        transaction_print(transactions.date())
+    elif choice == '8':
+        transaction_print(transactions.month())
+    elif choice == '9':
+        transaction_print(transactions.year())
+    elif choice == '10':
+        transaction_print(transactions.category())
+    elif choice == '11':
+        print(MENU)
     else:
-        print("choice",choice,"not yet implemented")
+        return '0'
 
-    choice = input("> ")
-    return(choice)
+    choice = input("Next command: ")
+    return choice
 
 
-def toplevel():
+def track():
     ''' handle the user's choice '''
-
-    ''' read the command args and process them'''
-    print(menu)
-    choice = input("> ")
+    print(MENU)
+    choice = input("Next command: ")
     while choice !='0' :
-        choice = process_choice(choice)
-    print('bye')
+        choice = proceed(choice)
+    print('thank you for using')
 
-#
-# here are some helper functions
-#
-
-def print_transactions(items):
+def transaction_print(items):
     ''' print the transactions '''
     if len(items)==0:
-        print('no items to print')
+        print('Nothing here')
         return
+
     print('\n')
-    print("%-10s %-10d %-10s %-10d %-30s"%(
-        'item #','amount','category','date','description'))
-    print('-'*40)
+
+    print("%-10s %-10s %-10s %-10s %-10s %-30s"%(
+        'row_id','item number','amount','category','date','description'))
+
     for item in items:
-        values = tuple(item.values()) 
-        print("%-10s %-10d %-10s %-10d %-30s"%values)
+        values = tuple(item.values())
+        print("%-10s %-10s %-10d %-10s %-10s %-30s"%
+        (values[0], values[1], values[2], values[3], values[4], values[5]))
 
-def print_category(cat):
-    print("%-3d %-10s %-30s"%(cat['rowid'],cat['name'],cat['desc']))
+def category_print(category_item):
+    '''
+    print a category
+    '''
+    print("%-3d %-10s %-30s"%(category_item['rowid'],category_item['name'],category_item['desc']))
 
-def print_categories(cats):
+def categories_print(categories):
+    '''
+    print categories
+    '''
     print("%-3s %-10s %-30s"%("id","name","description"))
-    print('-'*45)
-    for cat in cats:
-        print_category(cat)
 
+    for category_item in categories:
+        category_print(category_item)
 
-# here is the main call!
-
-toplevel()
-
+track()
